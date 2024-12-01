@@ -2,19 +2,23 @@
 
 import React, { useState } from 'react'
 import { Input } from '../atoms/input'
-
+import { login } from '../../services/loginServices'
 import Switch from '../atoms/switch'
 import { Button } from '../atoms/button'
+import { setCookie } from '../../utils/tools'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [rememberMe, setRememberMe] = useState(false)
+  const [remember, setRemember] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Aquí iría la lógica para manejar el inicio de sesión
-    console.log('Login submitted', { email, password, rememberMe })
+    const response = await login({ email, password, remember })
+    response.jwt ? setCookie('token', response.jwt, 1) : null;
+    console.log(response)
+    console.log('Login submitted', { email, password, remember })  // Mejorar la gestion del login y del auth!!!
   }
 
   return (
@@ -52,7 +56,7 @@ export default function LoginForm() {
           <div className="flex items-center justify-between">
             <Switch
               label="Recordarme"
-              onChange={(checked) => setRememberMe(checked)}
+              onChange={(checked) => setRemember(checked)}
             />
             <div className="text-sm">
               <a href="#" className="font-medium text-primary hover:text-primary/80">

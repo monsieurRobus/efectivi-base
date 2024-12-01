@@ -1,5 +1,5 @@
 
-import LoginForm from '@/components/molecules/login-form';
+import LoginForm from '@/components/molecules/LoginForm';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 

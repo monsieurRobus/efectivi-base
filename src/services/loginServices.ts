@@ -1,6 +1,12 @@
 import { httpPostLogin } from "../utils/httpCalls"
 
-export const login = async ({email,password,remember})=>{
+export interface LoginCredentials {
+    email: string;
+    password: string;
+    remember: boolean;
+}
+
+export const loginService = async ({email,password,remember}:LoginCredentials)=>{
     const value = {
         identifier: email,
         password: password,

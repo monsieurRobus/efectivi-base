@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Input } from '../atoms/input'
-import { login } from '../../services/loginServices'
+import { loginService } from '../../services/loginServices'
 import Switch from '../atoms/switch'
 import { Button } from '../atoms/button'
 import { setCookie } from '../../utils/tools'
@@ -15,10 +15,11 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Aquí iría la lógica para manejar el inicio de sesión
-    const response = await login({ email, password, remember })
-    response.jwt ? setCookie('token', response.jwt, 1) : null;
+    const response = await loginService({ email, password, remember })
     console.log(response)
-    console.log('Login submitted', { email, password, remember })  // Mejorar la gestion del login y del auth!!!
+    // response.jwt ? setCookie('token', response.jwt, 1) : null;
+    // console.log(response)
+    // console.log('Login submitted', { email, password, remember })  // Mejorar la gestion del login y del auth!!!
   }
 
   return (

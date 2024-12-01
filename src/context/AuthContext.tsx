@@ -1,6 +1,6 @@
 "use client"
 import { getCookie, setCookie } from '@/utils/tools';
-import React, { createContext, useState, useContext, ReactNode, useEffect} from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useMemo, use} from 'react';
 
 
 interface User {
@@ -10,7 +10,7 @@ interface User {
 }
 
 interface AuthContextType {
-    user: User | null;
+    userLogged: User | null;
     login: (userData: User, token:string) => void;
     logout: () => void;
 }
@@ -24,29 +24,45 @@ interface AuthProviderProps {
 
 
 export const AuthProvider:React.FC<AuthProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [userLogged, setUserLogged] = useState<User | null>(null);
     
     useEffect(() => {
-        const userCookie = getCookie('user');
-        const userToken = getCookie('token');
-        if (userCookie && userToken) {
-            setUser(JSON.parse(userCookie));
+        const userCookie = getCookie('user') ?? null;
+        const userToken = getCookie('token') ?? null;
+        if (userCookie && userToken && userCookie !== 'undefined') {
+            try {
+                const parsedUser = JSON.parse(userCookie);
+                setUserLogged(parsedUser);
+            } catch (error) {
+                console.error('Error al parsear la cookie de usuario:', error);
+                setUserLogged(null);
+                // Opcional: eliminar las cookies corruptas
+                setCookie('user', '', -1);
+                setCookie('token', '', -1);
+            }
         }
     }, []);
     
     const login = (userData: User,token:string) => {
-        setUser(userData); 
+        setUserLogged(userData); 
         setCookie('token', token, 1);
         setCookie('user', JSON.stringify(userData), 1);
     };
-    const logout = () => {7
-        setUser(null)
+    const logout = () => {
+        setUserLogged(null)
         setCookie('token', '', 0);
         setCookie('user', '', 0);
     };
 
+    const contextValue = useMemo(() => ({
+        userLogged,
+        login,
+        logout,
+    }), [userLogged]);
+    
+
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ userLogged, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

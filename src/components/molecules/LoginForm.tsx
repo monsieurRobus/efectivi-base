@@ -1,29 +1,59 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useDeferredValue, useRef, useState, useCallback, useEffect } from 'react'
 import { Input } from '../atoms/input'
 import { loginService } from '../../services/loginServices'
 import Switch from '../atoms/switch'
 import { Button } from '../atoms/button'
-import { setCookie } from '../../utils/tools'
+import { useToast } from '@/context/ToastContext'
+import { useAuth } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation'
+
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [remember, setRemember] = useState(false)
+  const [email, setEmail] = useState('');
+  const emailDeferred = useDeferredValue(email);
+  const [password, setPassword] = useState('');
+  const passwordDeferred = useDeferredValue(password);
+  const [remember, setRemember] = useState(false);
+  const [error, setError] = useState('');
+  const [passError,setPassError] = useState('');
+  const [emailError,setEmailError] = useState('');
+  const { addToast } = useToast();
+  const { userLogged, login, logout} = useAuth();
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     // Aquí iría la lógica para manejar el inicio de sesión
-    const response = await loginService({ email, password, remember })
-    console.log(response)
-    // response.jwt ? setCookie('token', response.jwt, 1) : null;
-    // console.log(response)
-    // console.log('Login submitted', { email, password, remember })  // Mejorar la gestion del login y del auth!!!
-  }
+    const {jwt,user,error} = await loginService({ email, password, remember })
+    console.log(jwt,user,error)
+    if(error){
+      setError(error)
+      if(error.status == 400 && error.name)
+      {
+        setEmailError('Correo o contraseña no válidos')
+        setPassError('Revise su correo y contraseña')
+        addToast('¡No se pudo loguear! Revisar credenciales', 'error');
+      }
+    }
+    else if(jwt){
+      login(user,jwt);
+      addToast('¡Logueado correctamente!', 'success');
+    }
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+  },[email,password,remember])
+
+
+  useEffect(() => {
+
+    setEmailError('')
+    setPassError('')
+
+  },[email,password,remember])
+
+
+  return <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-md">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
@@ -40,6 +70,7 @@ export default function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                error={emailError}
               />
             </div>
             <div>
@@ -50,6 +81,7 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                error={passError}
               />
             </div>
           </div>
@@ -77,6 +109,6 @@ export default function LoginForm() {
         </form>
       </div>
     </div>
-  )
+  
 }
 

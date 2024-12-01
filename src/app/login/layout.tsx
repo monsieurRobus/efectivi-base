@@ -1,6 +1,8 @@
-import ProtectedLayout from '@/context/ProtectedLayout'
-import React from 'react'
-
+"use client"
+import React, { useEffect } from 'react'
+import LoginForm from '../../components/molecules/LoginForm'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
 
 
 const Layout = ({
@@ -8,6 +10,13 @@ const Layout = ({
     }: {
         children: React.ReactNode
     }) => {
+        const {userLogged} = useAuth();
+        const router = useRouter();
+        useEffect(()=>{
+          if(userLogged)
+            router.push('/dashboard')
+        },[userLogged])
+        
     return (
             <main>
                 {children}

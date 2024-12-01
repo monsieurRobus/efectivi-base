@@ -9,13 +9,16 @@ const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
     
 
     const router = useRouter();
-    const {user, logout} = useAuth();
+    const {userLogged, logout} = useAuth();
     
     useEffect(() => {
-        if (!user) {
+        if (!userLogged) {
             router.push('/login')
         }
-    },[user,router]);
+        else {
+            router.push('/dashboard')
+        }
+    },[userLogged,router]);
     
 
 return <>{children}</>;

@@ -1,12 +1,19 @@
-import ProtectedLayout from "@/context/ProtectedLayout";
-
+"use client"
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  return (
-    <main>
-      <ProtectedLayout>
-        <h1>Home</h1>
-      </ProtectedLayout>
-    </main>
-  );
+
+  const {userLogged, logout} = useAuth();
+  const router = useRouter();
+useEffect(() => {
+    if (!userLogged) {
+        router.push('/login')
+    }
+    else {
+        router.push('/dashboard')
+    }
+},[userLogged])
+
 }

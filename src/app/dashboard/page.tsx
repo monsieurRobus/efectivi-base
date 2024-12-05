@@ -3,6 +3,7 @@ import { getDashboardData } from '@/services/dashboardServices'
 import ProtectedLayout from '@/context/ProtectedLayout'
 import React from 'react'
 import { LineChart } from '@/components/organism/LineChart'
+import Image from 'next/image'
 
 type PageProps = {}
 
@@ -16,7 +17,7 @@ const page = async (props: PageProps) => {
 
   return (
     <ProtectedLayout>
-        <main className={'grid gap-2 md:grid-cols-3 lg:grid-cols-3'}>
+        <main className={'flex flex-col md:grid gap-4 grid-cols-1 md:grid-cols-3'}>
             <Card>
                 <CardHeader>
                     <CardTitle>Canciones</CardTitle>
@@ -44,7 +45,7 @@ const page = async (props: PageProps) => {
                     <h1 className={'text-6xl'}>{eventsQuantity}</h1>
                 </CardContent>                
             </Card>
-            <Card className={'col-span-3'}>
+            <Card className={'transition-colors col-span-3 hover:bg-slate-200'}>
                 <CardHeader>
                     <CardTitle>Próximo evento</CardTitle>
                     <CardDescription>Resumen del próximo evento a realizar</CardDescription>
@@ -60,8 +61,7 @@ const page = async (props: PageProps) => {
 
                     </div>
                 </CardContent>                
-            </Card>
-
+            </Card>        
         </main>
     </ProtectedLayout>
   )

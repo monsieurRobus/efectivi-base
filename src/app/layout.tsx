@@ -5,6 +5,8 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import ToastContainer from "@/components/molecules/ToastContainer";
+import Header from "@/components/organism/Header";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,6 +31,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <ToastProvider>
+              <Header />
               {children}
               <ToastContainer />
             </ToastProvider>

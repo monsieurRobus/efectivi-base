@@ -1,16 +1,22 @@
+import EventDetails from '@/components/EventDetails'
+import { getEventById } from '@/services/eventServices'
 import React from 'react'
 
-type Props = {}
 
-const page = async(props: Props) => {
-
-    // const event= await fetch('http://localhost:3000/api/event/1')
-
+export const Page = async({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) => {
+  const id =   (await params).id
+  const eventData = await getEventById(id)
+  console.log("aqui")
+  console.log(eventData)
   return (
     <div className={'pt-12'}>
-        <h1></h1>
+        <EventDetails event={eventData.data.attributes} />
     </div>
   )
 }
 
-export default page 
+export default Page 

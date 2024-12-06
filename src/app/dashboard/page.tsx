@@ -2,8 +2,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter} 
 import { getDashboardData } from '@/services/dashboardServices'
 import ProtectedLayout from '@/context/ProtectedLayout'
 import React from 'react'
-import { LineChart } from '@/components/organism/LineChart'
-import Image from 'next/image'
+import Link from 'next/link'
 
 type PageProps = {}
 
@@ -17,7 +16,7 @@ const page = async (props: PageProps) => {
 
   return (
     <ProtectedLayout>
-        <main className={'flex flex-col md:grid gap-4 grid-cols-1 md:grid-cols-3'}>
+        <main className={'flex flex-col mt-12 md:grid gap-4 grid-cols-1 md:grid-cols-3'}>
             <Card>
                 <CardHeader>
                     <CardTitle>Canciones</CardTitle>
@@ -45,21 +44,25 @@ const page = async (props: PageProps) => {
                     <h1 className={'text-6xl'}>{eventsQuantity}</h1>
                 </CardContent>                
             </Card>
-            <Card className={'transition-colors col-span-3 hover:bg-slate-200'}>
+            <Card className={'transition-colors transition-shadow col-span-2 hover:bg-slate-200 hover:shadow-lg'}>
                 <CardHeader>
                     <CardTitle>Próximo evento</CardTitle>
                     <CardDescription>Resumen del próximo evento a realizar</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className={'flex flex-row'}>
-                        <div className={'flex flex-col'}>
-                            <h1 className={'text-4xl'}>
-                                {eventList[0].Title}
-                            </h1>
-                            <h2 className={'text-2xl'}>{eventList[0].Type}</h2>
+                    <Link href={`/event/${eventList[0].id}`}>
+                        <div className={'flex flex-row gap-4'}>
+                            <div className={'flex flex-col'}>
+                                <h1 className={'text-4xl'}>
+                                    {eventList[0].Title}
+                                </h1>
+                                <h2 className={'text-2xl'}>{eventList[0].Type}</h2>
+                            </div>
+                            <div className={'flex flex-col'}>
+                                <h2 className={'text-2xl'}>Localización</h2>
+                            </div>
                         </div>
-
-                    </div>
+                    </Link>
                 </CardContent>                
             </Card>        
         </main>

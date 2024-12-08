@@ -11,7 +11,7 @@ export const Page = async({
   const id =   (await params).id
   const eventData = await getEventById(id)
   return (
-    <div className={'pt-12'}>
+    <div className={'pt-12 w-full'}>
         <EventDetails event={eventData.data.attributes} />
     </div>
   )

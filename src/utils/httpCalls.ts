@@ -38,3 +38,30 @@ export const httpPost = async (url: string, data: any) => {
     });
     return response.json();
 }
+
+export const httpPatch = async (url: string, data: any) => {
+    const token = getCookie('token');
+    const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)}
+    );
+    return response.json();
+
+}
+
+export const httpPut = async (url: string, data: any) => {
+    const token = getCookie('token');
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}

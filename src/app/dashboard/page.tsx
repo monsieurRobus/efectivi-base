@@ -44,14 +44,14 @@ const page = async (props: PageProps) => {
                     <h1 className={'text-6xl'}>{eventsQuantity}</h1>
                 </CardContent>                
             </Card>
-            <Card className={'transition-colors transition-shadow col-span-2 hover:bg-slate-200 hover:shadow-lg'}>
+            <Card className={'transition-all col-span-2 hover:bg-slate-200 hover:shadow-lg'}>
                 <Link href={`/event/${eventList[0].id}`}>
                     <CardHeader>
                         <CardTitle>Próximo evento</CardTitle>
                         <CardDescription>Resumen del próximo evento a realizar</CardDescription>
                     </CardHeader>
                     <CardContent>
-                            <div className={'flex flex-row gap-4'}>
+                            <div className={'flex flex-col md:flex-row gap-4'}>
                                 <div className={'flex flex-col'}>
                                     <h1 className={'text-4xl'}>
                                         {eventList[0].Title}

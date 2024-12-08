@@ -1,5 +1,5 @@
 import React from 'react';
-import { Toast as ToastType } from '../../../types/toast';
+import { Toast as ToastType } from '../../types/toast';
 import { XCircle, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 interface ToastProps extends ToastType {

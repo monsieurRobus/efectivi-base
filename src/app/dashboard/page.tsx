@@ -45,25 +45,25 @@ const page = async (props: PageProps) => {
                 </CardContent>                
             </Card>
             <Card className={'transition-colors transition-shadow col-span-2 hover:bg-slate-200 hover:shadow-lg'}>
-                <CardHeader>
-                    <CardTitle>Próximo evento</CardTitle>
-                    <CardDescription>Resumen del próximo evento a realizar</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Link href={`/event/${eventList[0].id}`}>
-                        <div className={'flex flex-row gap-4'}>
-                            <div className={'flex flex-col'}>
-                                <h1 className={'text-4xl'}>
-                                    {eventList[0].Title}
-                                </h1>
-                                <h2 className={'text-2xl'}>{eventList[0].Type}</h2>
+                <Link href={`/event/${eventList[0].id}`}>
+                    <CardHeader>
+                        <CardTitle>Próximo evento</CardTitle>
+                        <CardDescription>Resumen del próximo evento a realizar</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                            <div className={'flex flex-row gap-4'}>
+                                <div className={'flex flex-col'}>
+                                    <h1 className={'text-4xl'}>
+                                        {eventList[0].Title}
+                                    </h1>
+                                    <h2 className={'text-2xl'}>{eventList[0].Type}</h2>
+                                </div>
+                                <div className={'flex flex-col'}>
+                                    <h2 className={'text-2xl'}>Localización</h2>
+                                </div>
                             </div>
-                            <div className={'flex flex-col'}>
-                                <h2 className={'text-2xl'}>Localización</h2>
-                            </div>
-                        </div>
-                    </Link>
-                </CardContent>                
+                    </CardContent>                
+                </Link>
             </Card>        
         </main>
     </ProtectedLayout>

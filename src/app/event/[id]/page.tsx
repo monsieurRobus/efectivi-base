@@ -10,8 +10,6 @@ export const Page = async({
 }) => {
   const id =   (await params).id
   const eventData = await getEventById(id)
-  console.log("aqui")
-  console.log(eventData)
   return (
     <div className={'pt-12'}>
         <EventDetails event={eventData.data.attributes} />

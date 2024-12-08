@@ -1,4 +1,4 @@
-import EventDetails from '@/components/EventDetails'
+import EventDetails from '@/components/organism/EventDetails'
 import { getEventById } from '@/services/eventServices'
 import React from 'react'
 
@@ -12,7 +12,7 @@ export const Page = async({
   const eventData = await getEventById(id)
   return (
     <div className={'pt-12 w-full'}>
-        <EventDetails event={eventData.data.attributes} />
+        <EventDetails eventData={{...eventData.data.attributes,id:id}} />
     </div>
   )
 }

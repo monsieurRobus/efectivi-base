@@ -1,16 +1,17 @@
 'use client'
 
-import { useCallback, useEffect, useState, useMemo } from 'react'
+import { useCallback, useEffect, useState, useMemo, useRef } from 'react'
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer, DirectionsService, useJsApiLoader } from '@react-google-maps/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CalendarIcon, MapPinIcon, UsersIcon, ClockIcon, BanknoteIcon, Map, Clock, Pencil } from 'lucide-react'
 import { getDistanceValue, getMonth, getWeekDay } from '@/lib/utils'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
+import { httpPut } from '@/utils/httpCalls'
 
 interface EventDetailsProps {
-  event: {
+  eventData: {
     id: string
     Title: string
     description: string
@@ -34,7 +35,7 @@ interface EventDetailsProps {
 
 const fixedLocation = { lat: 39.0286166590369, lng: -1.8883300711425557 } // Madrid como ubicación fija
 
-const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
+const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API!,
   });
@@ -43,7 +44,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
   const [distance, setDistance] = useState<number>(0);
   const [costTravel, setCostTravel] = useState<number>(0);
   const [editTime, setEditTime] = useState<boolean>(false);
+  const [event, setEventData] = useState(()=>eventData);
   const newDate = new Date(event.Date);
+  const timeComponent = useRef<HTMLInputElement>(null);
+  console.log(event.id)
   const directionsCallback = useCallback((result: google.maps.DirectionsResult | null,
     status: google.maps.DirectionsStatus
   ) => {
@@ -58,6 +62,21 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
   // Aqui llamaremos al endpoint para editar el evento y cambiar la hora.
   const handleChangeTime = ()=>{
 
+    const time = timeComponent.current?.value
+
+    return httpPut(`${process.env.NEXT_PUBLIC_PROTOCOL}${process.env.NEXT_PUBLIC_HOST}${process.env.NEXT_PUBLIC_API}/events/${event.id}`, 
+      {
+        data: {Time: time}}
+      ).then(response => 
+      {
+        if(response.status===200){
+          console.log(response)
+          setEditTime(()=>false);  
+          setEventData({...event, Time: response.data.attributes.Time})     
+          if(timeComponent.current) timeComponent.current.value = response.data.attributes.Time
+        }
+      }
+      )
   }
 
   const directionsOptions = useMemo(() => ({
@@ -81,21 +100,21 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
       <div className="grid p-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
         <Card className="lg:col-span-4">
           <CardHeader>
-            <div className={'flex flex-col md:flex-col lg:flex-row gap-2'}>
+            <div className={'flex flex-col md:flex-col lg:flex-row gap-2 '}>
               {event.Private ? <Badge variant={'destructive'}>Privado</Badge> : <Badge variant={'secondary'}>Público</Badge>}
               <CardTitle className="text-2xl font-bold">{event.Title}</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
-            <div className={'flex flex-col md:flex-row gap-4'}>
+            <div className={'flex flex-col md:flex-row gap-4 '}>
               <div className={'flex flex-row '}>
                 <CalendarIcon className="w-6 h-6 mr-2" /><span>{getWeekDay(newDate.getDay())} {newDate.getDate()} de {getMonth(newDate.getMonth())}, {newDate.getFullYear()} </span>
               </div>
               <div className={'flex flex-row '}>
                 <MapPinIcon className="w-6 h-6 mr-2" /><span>{event.Location.address?? ''}</span>
               </div>
-              <div className={'flex flex-row '}>
-                {editTime?<div><input type={'time'} defaultValue={event.Time}/><Button>Save</Button></div>:<div><Clock  className="w-6 h-6 mr-2"/><span>{event.Time}</span><Pencil onClick={()=>setEditTime(()=>true)}/></div>}
+              <div className={'flex flex-row items-center justify-center'}>
+                <Clock  className="w-6 h-6 mr-2"/>{editTime?<div className={'flex flex-col md:flex-row gap-2 justify-center items-center'}><input clasName={' h-6 mr-2'} ref={timeComponent} type={'time'} defaultValue={event.Time}/><Button className={' h-6 mr-2'} onClick={()=>handleChangeTime()}>Save</Button ></div>:<div className={'flex flex-col md:flex-row gap-2'}><span>{event.Time}</span><Pencil onClick={()=>setEditTime(()=>true)}/></div>}
               </div>
               
             </div>

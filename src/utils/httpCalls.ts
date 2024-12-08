@@ -63,5 +63,5 @@ export const httpPut = async (url: string, data: any) => {
         },
         body: JSON.stringify(data)
     });
-    return response.json();
+    return ({... await response.json(), status: response.status});
 }

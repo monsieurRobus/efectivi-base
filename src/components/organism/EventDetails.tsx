@@ -114,7 +114,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
                 <MapPinIcon className="w-6 h-6 mr-2" /><span>{event.Location.address?? ''}</span>
               </div>
               <div className={'flex flex-row items-center justify-center'}>
-                <Clock  className="w-6 h-6 mr-2"/>{editTime?<div className={'flex flex-col md:flex-row gap-2 justify-center items-center'}><input clasName={' h-6 mr-2'} ref={timeComponent} type={'time'} defaultValue={event.Time}/><Button className={' h-6 mr-2'} onClick={()=>handleChangeTime()}>Save</Button ></div>:<div className={'flex flex-col md:flex-row gap-2'}><span>{event.Time}</span><Pencil onClick={()=>setEditTime(()=>true)}/></div>}
+                <Clock  className="w-6 h-6 mr-2"/>{editTime?<div className={'flex flex-col md:flex-row gap-2 justify-center items-center'}><input className={' h-6 mr-2'} ref={timeComponent} type={'time'} defaultValue={event.Time}/><Button className={' h-6 mr-2'} onClick={()=>handleChangeTime()}>Save</Button ></div>:<div className={'flex flex-col md:flex-row gap-2'}><span>{event.Time}</span><Pencil onClick={()=>setEditTime(()=>true)}/></div>}
               </div>
               
             </div>

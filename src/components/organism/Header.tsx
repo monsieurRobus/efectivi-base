@@ -13,7 +13,7 @@ const Header = (props: Props) => {
     const { userLogged, logout } = useAuth();
   
   return userLogged && (
-    <header className={'fixed flex flex-row justify-between px-2 md:px-12 w-full h-12 items-center border-b border-stone-950'}>
+    <header className={'fixed flex flex-row justify-between px-2 md:px-12 w-full h-12 items-center border-b border-stone-950 bg-white'}>
         <div>
           <nav className={'flex flex-row gap-2'}>
             <span>gigger</span>

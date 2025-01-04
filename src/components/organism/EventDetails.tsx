@@ -2,13 +2,17 @@
 
 import { useCallback, useEffect, useState, useMemo, useRef } from 'react'
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer, DirectionsService, useJsApiLoader } from '@react-google-maps/api'
+import { PDFViewer } from '@react-pdf/renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CalendarIcon, MapPinIcon, UsersIcon, ClockIcon, BanknoteIcon, Map, Clock, Pencil } from 'lucide-react'
 import { getDistanceValue, getMonth, getWeekDay } from '@/lib/utils'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from '../ui/button'
-import { httpPut } from '@/utils/httpCalls'
+import { setEventTime } from '@/services/eventServices'
+import { InvoiceForm } from './invoice-form'
+import { InvoicePDF } from './invoice-pdf';
+
 
 interface EventDetailsProps {
   eventData: {
@@ -45,6 +49,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
   const [costTravel, setCostTravel] = useState<number>(0);
   const [editTime, setEditTime] = useState<boolean>(false);
   const [event, setEventData] = useState(()=>eventData);
+  const [invoiceData, setInvoiceData] = useState<FormData>(null)
   const newDate = new Date(event.Date);
   const timeComponent = useRef<HTMLInputElement>(null);
   console.log(event.id)
@@ -62,12 +67,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
   // Aqui llamaremos al endpoint para editar el evento y cambiar la hora.
   const handleChangeTime = ()=>{
 
-    const time = timeComponent.current?.value
+    const time = timeComponent.current?.value;
 
-    return httpPut(`${process.env.NEXT_PUBLIC_PROTOCOL}${process.env.NEXT_PUBLIC_HOST}${process.env.NEXT_PUBLIC_API}/events/${event.id}`, 
-      {
-        data: {Time: time}}
-      ).then(response => 
+    return setEventTime(event.id, time ?? '00:00').then(response => 
       {
         if(response.status===200){
           console.log(response)
@@ -78,6 +80,11 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
       }
       )
   }
+
+    const handlePDFGenerate = (data: InvoiceData) => {
+      setInvoiceData(data);
+    };
+  
 
   const directionsOptions = useMemo(() => ({
     origin: fixedLocation,
@@ -114,7 +121,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
                 <MapPinIcon className="w-6 h-6 mr-2" /><span>{event.Location.address?? ''}</span>
               </div>
               <div className={'flex flex-row items-center justify-center'}>
-                <Clock  className="w-6 h-6 mr-2"/>{editTime?<div className={'flex flex-col md:flex-row gap-2 justify-center items-center'}><input className={' h-6 mr-2'} ref={timeComponent} type={'time'} defaultValue={event.Time}/><Button className={' h-6 mr-2'} onClick={()=>handleChangeTime()}>Save</Button ></div>:<div className={'flex flex-col md:flex-row gap-2'}><span>{event.Time}</span><Pencil onClick={()=>setEditTime(()=>true)}/></div>}
+                <Clock  className="w-6 h-6 mr-2"/>{editTime?<div className={'flex flex-col md:flex-row gap-2 justify-center items-center'}><input className={' h-6 mr-2'} ref={timeComponent} type={'time'} defaultValue={event.Time}/><Button className={' h-6 mr-2'} onClick={()=>handleChangeTime()}>Save</Button ></div>:<div className={'flex flex-col md:flex-row gap-2'}><span>{event.Time.substring(0,5)}</span><Pencil onClick={()=>setEditTime(()=>true)}/></div>}
               </div>
               
             </div>
@@ -124,9 +131,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
           <TabsList className='w-full'>
             <TabsTrigger value="mapa">Mapa</TabsTrigger>
             <TabsTrigger value="detalles">Detalles</TabsTrigger>
+            <TabsTrigger value="resumen">Resumen</TabsTrigger>
           </TabsList>
           <TabsContent value="mapa">
-          <Card>
+          <Card className='h-96'>
             <CardHeader>
               <CardTitle>Ubicación y Distancia</CardTitle>
             </CardHeader>
@@ -163,7 +171,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
           </Card>
           </TabsContent>
           <TabsContent value="detalles">
-            <Card>
+            <Card className='h-96'>
               <CardHeader>
                 <CardTitle>Detalles del Evento</CardTitle>
               </CardHeader>
@@ -183,7 +191,57 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventData }) => {
               </CardContent>
             </Card>
           </TabsContent>
+          <TabsContent value="resumen">
+            <Card className='h-96'>
+              <CardHeader>
+                <CardTitle>Resumen del Evento</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={'flex flex-col gap-4'}>
+                  <div className={'flex flex-row gap-4'}>
+                    <UsersIcon className="w-6 h-6 mr-2" /><span>{event.attendees} asistentes</span>
+                  </div>
+                  <div className={'flex flex-row gap-4'}>
+                    <BanknoteIcon className="w-6 h-6 mr-2" /><span>{event.price} €</span>
+                  </div>
+                </div>
+              </CardContent>
+              </Card>
+          </TabsContent>
         </Tabs>  
+        <Tabs defaultValue='factura' className={'col-span-2'}>
+          <TabsList className='w-full'>
+            <TabsTrigger value="factura">Factura</TabsTrigger>
+            <TabsTrigger value="vista">Vista Previa</TabsTrigger>
+          </TabsList>
+          <TabsContent value='factura'>
+                  <Card className='h-fit'>
+                    <CardHeader>
+                      <CardTitle>Generador Facturas</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <InvoiceForm onSubmit={handlePDFGenerate}/>
+                    </CardContent>
+                  </Card>
+          </TabsContent>
+          <TabsContent value='vista'>
+                  <Card className='h-fit'>
+                    <CardHeader>
+                      <CardTitle>Generador Facturas</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardContent>
+                        
+                                  {invoiceData && (
+                                    <PDFViewer width="100%" height={600}>
+                                      <InvoicePDF data={invoiceData} />
+                                    </PDFViewer>
+                                  )}
+                                </CardContent>
+                    </CardContent>
+                  </Card>
+          </TabsContent>
+        </Tabs>
         
         
       </div>
